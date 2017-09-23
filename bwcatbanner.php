@@ -754,63 +754,7 @@ class Bwcatbanner extends Module
 
             $id = (int)Tools::substr($item, Tools::strlen($values[1]), Tools::strlen($item));
 
-            switch (Tools::substr($item, 0, Tools::strlen($values[1]))) {
-                case 'CAT':
-                    $category = new Category((int)$id, (int)$id_lang);
-                    if (Validate::isLoadedObject($category)) {
-                        $html .= '<option selected="selected" value="CAT'.$id.'">'.$category->name.'</option>'.PHP_EOL;
-                    }
-                    break;
-
-                case 'PRD':
-                    $product = new Product((int)$id, true, (int)$id_lang);
-                    if (Validate::isLoadedObject($product)) {
-                        $html .= '<option selected="selected" value="PRD'.$id.'">'.$product->name.' (product link)</option>'.PHP_EOL;
-                    }
-                    break;
-
-                case 'PRDI':
-                    $product = new Product((int)$id, true, (int)$id_lang);
-                    if (Validate::isLoadedObject($product)) {
-                        $html .= '<option selected="selected" value="PRDI'.$id.'">'.$product->name.' (product info)</option>'.PHP_EOL;
-                    }
-                    break;
-
-                case 'CMS':
-                    $cms = new CMS((int)$id, (int)$id_lang);
-                    if (Validate::isLoadedObject($cms)) {
-                        $html .= '<option selected="selected" value="CMS'.$id.'">'.$cms->meta_title.'</option>'.PHP_EOL;
-                    }
-                    break;
-
-                case 'CMS_CAT':
-                    $category = new CMSCategory((int)$id, (int)$id_lang);
-                    if (Validate::isLoadedObject($category)) {
-                        $html .= '<option selected="selected" value="CMS_CAT'.$id.'">'.$category->name.'</option>'.PHP_EOL;
-                    }
-                    break;
-
-                case 'ALLMAN':
-                    $html .= '<option selected="selected" value="ALLMAN0">'.$this->l('All manufacturers').'</option>'.PHP_EOL;
-                    break;
-
-                case 'MAN':
-                    $manufacturer = new Manufacturer((int)$id, (int)$id_lang);
-                    if (Validate::isLoadedObject($manufacturer)) {
-                        $html .= '<option selected="selected" value="MAN'.$id.'">'.$manufacturer->name.'</option>'.PHP_EOL;
-                    }
-                    break;
-
-                case 'ALLSUP':
-                    $html .= '<option selected="selected" value="ALLSUP0">'.$this->l('All suppliers').'</option>'.PHP_EOL;
-                    break;
-
-                case 'SUP':
-                    $supplier = new Supplier((int)$id, (int)$id_lang);
-                    if (Validate::isLoadedObject($supplier)) {
-                        $html .= '<option selected="selected" value="SUP'.$id.'">'.$supplier->name.'</option>'.PHP_EOL;
-                    }
-                    break;
+            switch (Tools::substr($item, 0, Tools::strlen($values[1]))) {    
 
                 case 'SHOP':
                     $shop = new Shop((int)$id);
@@ -935,7 +879,7 @@ class Bwcatbanner extends Module
                         $this->menu .= '<div class="is-bwcatmenu bwcatbanner_item first-level-menu '.$top['unique_code'].'">';
                         foreach ($rows as $row) {
                             $this->menu .= '<div id="bwcatmenu-row-'.$item_num.'-'.$row.'" class="bwcatmenu-row row bwcatmenu-row-'.$row.'">';
-                            if ($cols = $bwcatmenu->getBwcatmenuRow((int)$top['id_item'], $row)) {
+                            if ($cols = $bwcatmenu->getBwcatmenuRowCols((int)$top['id_item'], $row)) {
                                 $sp_class = '';
                                 foreach ($cols as $col) {
                                     if ($col['class']) {
@@ -973,124 +917,7 @@ class Bwcatbanner extends Module
             $id = (int)Tools::substr($item, Tools::strlen($value[1]), Tools::strlen($item));
 
             switch (Tools::substr($item, 0, Tools::strlen($value[1]))) {
-                case 'CAT':
-                    $this->menu .= $this->generateCategoriesMenu(Category::getNestedCategories($id, $id_lang, true, $this->user_groups));
-                    break;
-
-                case 'PRD':
-                    $selected = ($this->page_name == 'product' && (Tools::getValue('id_product') == $id)) ? ' class="sfHover product"' : ' class="product"';
-                    $product = new Product((int)$id, true, (int)$id_lang);
-                    if (!is_null($product->id)) {
-                        $this->menu .= '<li'.$selected.'>
-                                            <a href="'.Tools::HtmlEntitiesUTF8($product->getLink()).'" title="'.$product->name.'">'.$product->name.'</a>
-                                        </li>'.PHP_EOL;
-                    }
-                    break;
-
-                case 'PRDI':
-                    $selected = ($this->page_name == 'product' && (Tools::getValue('id_product') == $id)) ?
-                                ' class="sfHover product-info"' :
-                                ' class="product-info"';
-                    $product = new Product((int)$id, true, (int)$id_lang);
-                    if (!is_null($product->id)) {
-                        $this->menu .= '<li'.$selected.'>'.$this->generateProductInfo($id).'</li>'.PHP_EOL;
-                    }
-                    break;
-
-                case 'CMS':
-                    $selected = ($this->page_name == 'cms' && (Tools::getValue('id_cms') == $id)) ? ' class="sfHover cms-page"' : ' class="cms-page"';
-                    $cms = CMS::getLinks((int)$id_lang, array($id));
-                    if (count($cms)) {
-                        $this->menu .= '<li'.$selected.'>
-                                            <a href="'.Tools::HtmlEntitiesUTF8($cms[0]['link']).'" title="'
-                                                .Tools::safeOutput($cms[0]['meta_title']).'">'.Tools::safeOutput($cms[0]['meta_title']).
-                                            '</a>
-                                        </li>'.PHP_EOL;
-                    }
-                    break;
-
-                case 'CMS_CAT':
-                    $category = new CMSCategory((int)$id, (int)$id_lang);
-                    $selected = ($this->page_name == 'cms' && ((int)Tools::getValue('id_cms_category') == $category->id)) ?
-                                ' class="sfHoverForce cms-category"' :
-                                ' class="cms-category"';
-                    if (count($category)) {
-                        $this->menu .= '<li'.$selected.'>
-                            <a href="'.Tools::HtmlEntitiesUTF8($category->getLink()).'" title="'.$category->name.'">'.$category->name.'</a>';
-                            $this->getCMSMenuItems($category->id);
-                        $this->menu .= '</li>'.PHP_EOL;
-                    }
-                    break;
-
-                case 'ALLMAN':
-                    $link = new Link;
-                    $this->menu .= '<li class="all-manufacturers">
-                                        <a href="'.$link->getPageLink('manufacturer').'" title="'.$this->l('All manufacturers').'">'.$this->l('All manufacturers').'</a>
-                                        <ul>'.PHP_EOL;
-                    $manufacturers = Manufacturer::getManufacturers();
-                    foreach ($manufacturers as $manufacturer) {
-                        $selected = ($this->page_name == 'manufacturer' && (Tools::getValue('id_supplier') == (int)$manufacturer['id_manufacturer'])) ?
-                                    ' class="sfHoverForce manufacturer"' :
-                                    ' class="manufacturer"';
-                        $this->menu .= '<li'.$selected.'>
-                                            <a href="'.$link->getManufacturerLink((int)$manufacturer['id_manufacturer'], $manufacturer['link_rewrite']).'"
-                                                title="'.Tools::safeOutput($manufacturer['name']).'">'.Tools::safeOutput($manufacturer['name']).'</a>
-                                        </li>'.PHP_EOL;
-                    }
-                    $this->menu .= '</ul>';
-                    break;
-
-                case 'MAN':
-                    $selected = ($this->page_name == 'manufacturer' && (Tools::getValue('id_manufacturer') == $id)) ?
-                                ' class="sfHover manufacturer"' :
-                                ' class="manufacturer"';
-                    $manufacturer = new Manufacturer((int)$id, (int)$id_lang);
-                    if (!is_null($manufacturer->id)) {
-                        if ((int)Configuration::get('PS_REWRITING_SETTINGS')) {
-                            $manufacturer->link_rewrite = Tools::link_rewrite($manufacturer->name);
-                        } else {
-                            $manufacturer->link_rewrite = 0;
-                        }
-                        $link = new Link;
-                        $this->menu .= '<li'.$selected.'>
-                                            <a href="'.Tools::HtmlEntitiesUTF8($link->getManufacturerLink((int)$id, $manufacturer->link_rewrite)).'"
-                                                title="'.Tools::safeOutput($manufacturer->name).'">'.Tools::safeOutput($manufacturer->name).'</a>
-                                            </li>'.PHP_EOL;
-                    }
-                    break;
-
-                case 'ALLSUP':
-                    $link = new Link;
-                    $this->menu .= '<li class="all-suppliers">
-                                        <a href="'.$link->getPageLink('supplier').'" title="'.$this->l('All suppliers').'">'.$this->l('All suppliers').'</a>
-                                        <ul>'.PHP_EOL;
-                    $suppliers = Supplier::getSuppliers();
-                    foreach ($suppliers as $supplier) {
-                        $selected = ($this->page_name == 'supplier' && (Tools::getValue('id_supplier') == (int)$supplier['id_supplier'])) ?
-                                    ' class="sfHoverForce supplier"' :
-                                    ' class="supplier"';
-                        $this->menu .= '<li'.$selected.'>
-                                            <a href="'.$link->getSupplierLink((int)$supplier['id_supplier'], $supplier['link_rewrite']).'"
-                                            title="'.Tools::safeOutput($supplier['name']).'">'.Tools::safeOutput($supplier['name']).'</a>
-                                        </li>'.PHP_EOL;
-                    }
-                    $this->menu .= '</ul>';
-                    break;
-
-                case 'SUP':
-                    $selected = ($this->page_name == 'supplier' && (Tools::getValue('id_supplier') == $id)) ?
-                                ' class="sfHover supplier"' :
-                                ' class="supplier"';
-                    $supplier = new Supplier((int)$id, (int)$id_lang);
-                    if (!is_null($supplier->id)) {
-                        $link = new Link;
-                        $this->menu .= '<li'.$selected.'>
-                                            <a href="'.Tools::HtmlEntitiesUTF8($link->getSupplierLink((int)$id, $supplier->link_rewrite)).'"
-                                            title="'.$supplier->name.'">'.$supplier->name.'</a>
-                                        </li>'.PHP_EOL;
-                    }
-                    break;
-
+                
                 case 'SHOP':
                     $selected = ($this->page_name == 'index' && ($this->context->shop->id == $id)) ? ' class="sfHover shop"' : ' class="shop"';
                     $shop = new Shop((int)$id);
@@ -1162,24 +989,24 @@ class Bwcatbanner extends Module
         $selected = '';
 
         switch ($type) {
-            case 'CAT':
-                $url = $link->getCategoryLink($id);
-                if ($this->page_name == 'category' && (int)Tools::getValue('id_category') == $id) {
-                    $selected = ' sfHoverForce';
-                }
-                break;
-            case 'CMS_CAT':
-                $url = $link->getCMSCategoryLink($id);
-                if ($this->page_name == 'cms' && ((int)Tools::getValue('id_cms_category') == $id)) {
-                    $selected = ' sfHoverForce';
-                }
-                break;
-            case 'CMS':
-                $url = $link->getCMSLink($id);
-                if ($this->page_name == 'cms' && Tools::getValue('id_cms') == $id) {
-                    $selected = ' sfHoverForce';
-                }
-                break;
+//             case 'CAT':
+//                 $url = $link->getCategoryLink($id);
+//                 if ($this->page_name == 'category' && (int)Tools::getValue('id_category') == $id) {
+//                     $selected = ' sfHoverForce';
+//                 }
+//                 break;
+//             case 'CMS_CAT':
+//                 $url = $link->getCMSCategoryLink($id);
+//                 if ($this->page_name == 'cms' && ((int)Tools::getValue('id_cms_category') == $id)) {
+//                     $selected = ' sfHoverForce';
+//                 }
+//                 break;
+//             case 'CMS':
+//                 $url = $link->getCMSLink($id);
+//                 if ($this->page_name == 'cms' && Tools::getValue('id_cms') == $id) {
+//                     $selected = ' sfHoverForce';
+//                 }
+//                 break;
         }
 
         return array('url' => $url, 'selected' => $selected);
@@ -1384,7 +1211,7 @@ class Bwcatbanner extends Module
     {
         $output = '';
         $id_lang = (int)$this->context->language->id;
-        $html = new Bwcatbanner($id_item);
+        $html = new BWCatMenuBanner($id_item);
 
         if ($html) {
             $this->context->smarty->assign('image_baseurl', $this->_path.'images/');
@@ -1778,7 +1605,7 @@ class Bwcatbanner extends Module
             }
 
             $fields_form['form']['input'][] = array('type' => 'hidden', 'name' => 'id_item', 'value' => $id);
-            $banner = new Bwcatbanner($id);
+            $banner = new BWCatMenuBanner($id);
             $fields_form['form']['images'] = $banner->image;
         }
 
@@ -1873,18 +1700,7 @@ class Bwcatbanner extends Module
     {
         $this->_clearCache('menu.tpl');
     }
-
-    public function getVideoType($link)
-    {
-        if (strpos($link, 'youtube') > 0) {
-            return 'youtube';
-        } elseif (strpos($link, 'vimeo') > 0) {
-            return 'vimeo';
-        } else {
-            return false;
-        }
-    }
-
+   
     public static function stylePath()
     {
         return dirname(__FILE__).'/views/css/items/';
