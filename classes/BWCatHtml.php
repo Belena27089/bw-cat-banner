@@ -55,7 +55,7 @@ class BWCatHtml extends ObjectModel
     {
         $sql = 'SELECT bwh.*, bwhl.`title`, bwhl.`content`
                 FROM `'._DB_PREFIX_.'bwcatbanner_html` bwh
-                LEFT JOIN `'._DB_PREFIX_.'bwcatbanner_html_lang` tmhl
+                LEFT JOIN `'._DB_PREFIX_.'bwcatbanner_html_lang` bwhl
                 ON (bwh.`id_item` = bwhl.`id_item`)
                 WHERE bwh.`id_shop` = '.(int)Context::getContext()->shop->id.'
                 AND bwhl.`id_lang` = '.(int)Context::getContext()->language->id;
