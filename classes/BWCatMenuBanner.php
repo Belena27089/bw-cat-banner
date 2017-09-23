@@ -86,7 +86,7 @@ class BWCatMenuBanner extends ObjectModel {
     public function getBannersList() {
         $sql = 'SELECT bwb.*, bwbl.`title`, bwbl.`url`, bwbl.`image`
                 FROM `' . _DB_PREFIX_ . 'bwcatbanner_banner` tmb
-                LEFT JOIN `' . _DB_PREFIX_ . 'tmmegamenu_banner_lang` bwbl
+                LEFT JOIN `' . _DB_PREFIX_ . 'bwcatbanner_banner_lang` bwbl
                 ON (bwb.`id_item` = bwbl.`id_item`)
                 WHERE bwb.`id_shop` = ' . (int) Context::getContext()->shop->id . '
                 AND bwbl.`id_lang` = ' . (int) Context::getContext()->language->id;
