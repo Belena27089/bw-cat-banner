@@ -52,7 +52,7 @@ class Bwcatbanner extends Module
 
         $this->bootstrap = true;
         $this->secure_key = Tools::encrypt($this->name);
-        $this->module_key = '832c9a16e83ca35e673a68c268c4607e';
+        $this->module_key = '';
 
         parent::__construct();
 
